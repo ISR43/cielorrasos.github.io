@@ -245,6 +245,27 @@
     color: var(--muted);
   }
   .ambient-tag strong { color: var(--text); }
+
+  .nav-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    padding-bottom: 8px;
+  }
+  .nav-link a {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .nav-link a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
 </style>
 </head>
 <body>
@@ -290,6 +311,10 @@
     <strong>Podés comprar todo o una parte</strong>, te ayudamos a decidir.
   </div>
 
+  <div class="nav-link">
+    <a href="sistema2.html">Ir al Sistema 2 →</a>
+  </div>
+
 </div>
 
 <script>
@@ -308,7 +333,8 @@ function calcMontantes(largo, ancho) {
   if (d3 === Math.floor(d3))   paso3 = d3 - 1;
   else if (d3 > 2)             paso3 = Math.floor(d3) - 1;
   else                         paso3 = Math.floor(d3);
-  const paso4 = paso3 * ancho;
+  // Python: paso4 = paso3 * largo  ← corregido (era ancho)
+  const paso4 = paso3 * largo;
   return Math.ceil((paso2 + paso4) / 2.6);
 }
 
@@ -331,15 +357,15 @@ function calcPlacas(largo, ancho) {
 }
 
 function calcTornilloFix(largo, ancho, soleras) {
-  return multiplo50(Math.ceil(largo * ancho + 4 * soleras));
+  return Math.ceil(largo * ancho + 4 * soleras); // crudo, multiplo50 al final
 }
 
 function calcTarugo(largo, ancho, soleras) {
-  return multiplo50(Math.ceil(largo * ancho + 4 * soleras));
+  return Math.ceil(largo * ancho + 4 * soleras); // crudo, multiplo50 al final
 }
 
-function calcT1(montantes) { return multiplo50(montantes * 6); }
-function calcT2(largo, ancho) { return multiplo50(Math.ceil(largo * ancho * 18)); }
+function calcT1(montantes) { return montantes * 6; } // crudo, multiplo50 al final
+function calcT2(largo, ancho) { return Math.ceil(largo * ancho * 18); } // crudo
 
 function calcMasilla(sup) {
   const consumo = sup * 0.8;
@@ -373,10 +399,10 @@ function calcularAmbiente(largoRaw, anchoRaw, bajaCm) {
     largo, ancho, sup, montantes, soleras,
     velas: velas.barras, velaDefault: velas.isDefault, bajaCm: velas.bajaCm,
     placas:  calcPlacas(largo, ancho),
-    t8:      calcTornilloFix(largo, ancho, soleras),
-    tarugo:  calcTarugo(largo, ancho, soleras),
-    t1:      calcT1(montantes),
-    t2:      calcT2(largo, ancho),
+    t8:      calcTornilloFix(largo, ancho, soleras), // crudo
+    tarugo:  calcTarugo(largo, ancho, soleras),       // crudo
+    t1:      calcT1(montantes),                       // crudo
+    t2:      calcT2(largo, ancho),                    // crudo
     masilla: calcMasilla(sup),
     cinta:   calcCinta(sup),
   };
@@ -439,7 +465,17 @@ function calcular() {
   }
 
   const resultados = medidas.map(([l, a]) => calcularAmbiente(l, a, bajaCm));
-  const datos = resultados.length === 1 ? resultados[0] : combinarAmbientes(resultados);
+  const resultadosAmbientes = resultados;
+  let datos;
+  if (resultados.length === 1) {
+    datos = Object.assign({}, resultados[0]);
+    datos.t8     = multiplo50(datos.t8);
+    datos.tarugo = multiplo50(datos.tarugo);
+    datos.t1     = multiplo50(datos.t1);
+    datos.t2     = multiplo50(datos.t2);
+  } else {
+    datos = combinarAmbientes(resultados);
+  }
 
   // Header
   let headerHtml = `<div class="res-title">Resultado del cálculo</div>`;
