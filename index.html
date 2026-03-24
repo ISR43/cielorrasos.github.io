@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -29,9 +28,7 @@
   }
   .wrap { max-width: 680px; margin: 0 auto; }
 
-  header {
-    margin-bottom: 40px;
-  }
+  header { margin-bottom: 40px; }
   .logo {
     font-family: var(--display);
     font-weight: 800;
@@ -266,6 +263,148 @@
     color: var(--accent);
     border-color: var(--accent);
   }
+
+  /* ── SELECTOR DE PLACA ─────────────────────────────── */
+  #placa-swap { display: none; }
+
+  .placa-swap-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .placa-swap-icon {
+    width: 28px;
+    height: 28px;
+    background: #1a1a00;
+    border: 1px solid #3a3a00;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .placa-swap-title {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent2);
+  }
+  .placa-swap-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .placa-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 560px) {
+    .placa-options { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 380px) {
+    .placa-options { grid-template-columns: 1fr; }
+  }
+
+  .placa-opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+  }
+  .placa-opt:hover {
+    border-color: #555;
+    background: #282828;
+  }
+  .placa-opt.selected {
+    border-color: var(--accent);
+    background: #1a2200;
+  }
+  .placa-opt.selected .placa-opt-cod { color: var(--accent); }
+  .placa-opt-cod {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--accent2);
+    margin-bottom: 4px;
+    transition: color 0.15s;
+  }
+  .placa-opt-nom {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.35;
+  }
+  .placa-opt-dim {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .placa-opt-badge {
+    display: inline-block;
+    background: #1a1200;
+    border: 1px solid #3a2d00;
+    color: var(--accent2);
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 2px;
+    margin-top: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .placa-opt.selected .placa-opt-badge {
+    background: #1a2200;
+    border-color: #3a5000;
+    color: var(--accent);
+  }
+
+  .placa-result {
+    background: #161f00;
+    border: 1px solid #2e4a00;
+    border-radius: 3px;
+    padding: 14px 16px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 2px;
+  }
+  .placa-result.visible { display: flex; }
+  .placa-result-left { flex: 1; }
+  .placa-result-cod {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .placa-result-nom {
+    font-size: 12px;
+    color: var(--text);
+  }
+  .placa-result-cant {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .placa-result-uni {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 4px;
+    font-family: var(--mono);
+    font-weight: 400;
+  }
 </style>
 </head>
 <body>
@@ -307,17 +446,85 @@
     <div class="aviso" id="aviso"></div>
   </div>
 
+  <!-- ── CAMBIO DE PLACA (opcional, aparece tras calcular) ── -->
+  <div class="card" id="placa-swap">
+    <div class="placa-swap-header">
+      <div class="placa-swap-icon">⇄</div>
+      <div>
+        <div class="placa-swap-title">Cambio de placa de yeso</div>
+        <div class="placa-swap-sub">Seleccioná una alternativa a la placa estándar 9.5 mm</div>
+      </div>
+    </div>
+
+    <div class="placa-options">
+      <div class="placa-opt selected" data-cod="095240" data-nom="PLACA KNAUF STD 9.5 MM 2.40×1.20 M" data-div="2.88" onclick="seleccionarPlaca(this)">
+        <div class="placa-opt-cod">095240</div>
+        <div class="placa-opt-nom">STD 9.5 mm</div>
+        <div class="placa-opt-dim">2.40 × 1.20 m</div>
+        <div class="placa-opt-badge">Default</div>
+      </div>
+      <div class="placa-opt" data-cod="0955300" data-nom="PLACA KNAUF STD 9.5 MM 3.00×1.20 M" data-div="3.6" onclick="seleccionarPlaca(this)">
+        <div class="placa-opt-cod">0955300</div>
+        <div class="placa-opt-nom">STD 9.5 mm</div>
+        <div class="placa-opt-dim">3.00 × 1.20 m</div>
+        <div class="placa-opt-badge">Menos cortes</div>
+      </div>
+      <div class="placa-opt" data-cod="125260" data-nom="PLACA KNAUF STD 12.5 MM 2.60×1.20 M" data-div="3.12" onclick="seleccionarPlaca(this)">
+        <div class="placa-opt-cod">125260</div>
+        <div class="placa-opt-nom">STD 12.5 mm</div>
+        <div class="placa-opt-dim">2.60 × 1.20 m</div>
+        <div class="placa-opt-badge">Mayor espesor</div>
+      </div>
+      <div class="placa-opt" data-cod="125300" data-nom="PLACA KNAUF STD 12.5 MM 3.00×1.20 M" data-div="3.6" onclick="seleccionarPlaca(this)">
+        <div class="placa-opt-cod">125300</div>
+        <div class="placa-opt-nom">STD 12.5 mm</div>
+        <div class="placa-opt-dim">3.00 × 1.20 m</div>
+        <div class="placa-opt-badge">Mayor espesor</div>
+      </div>
+      <div class="placa-opt" data-cod="125240RH" data-nom="PLACA KNAUF RH 12.5 MM 2.40×1.20 M" data-div="2.88" onclick="seleccionarPlaca(this)">
+        <div class="placa-opt-cod">125240RH</div>
+        <div class="placa-opt-nom">RH 12.5 mm</div>
+        <div class="placa-opt-dim">2.40 × 1.20 m</div>
+        <div class="placa-opt-badge">Resist. humedad</div>
+      </div>
+      <div class="placa-opt" data-cod="125260RH" data-nom="PLACA KNAUF RH 12.5 MM 2.60×1.20 M" data-div="3.12" onclick="seleccionarPlaca(this)">
+        <div class="placa-opt-cod">125260RH</div>
+        <div class="placa-opt-nom">RH 12.5 mm</div>
+        <div class="placa-opt-dim">2.60 × 1.20 m</div>
+        <div class="placa-opt-badge">Resist. humedad</div>
+      </div>
+      <div class="placa-opt" data-cod="125300RH" data-nom="PLACA KNAUF RH 12.5 MM 3.00×1.20 M" data-div="3.6" onclick="seleccionarPlaca(this)">
+        <div class="placa-opt-cod">125300RH</div>
+        <div class="placa-opt-nom">RH 12.5 mm</div>
+        <div class="placa-opt-dim">3.00 × 1.20 m</div>
+        <div class="placa-opt-badge">Resist. humedad</div>
+      </div>
+    </div>
+
+    <div class="placa-result" id="placa-result">
+      <div class="placa-result-left">
+        <div class="placa-result-cod" id="pr-cod"></div>
+        <div class="placa-result-nom" id="pr-nom"></div>
+      </div>
+      <div>
+        <span class="placa-result-cant" id="pr-cant"></span>
+        <span class="placa-result-uni">unidades</span>
+      </div>
+    </div>
+  </div>
+
   <div class="footer-msg">
     <strong>Podés comprar todo o una parte</strong>, te ayudamos a decidir.
   </div>
 
-  <div class="nav-link">
-    <a href="sistema2.html">Ir al Sistema 2 →</a>
-  </div>
+
 
 </div>
 
 <script>
+// ── ESTADO GLOBAL ────────────────────────────────────────────
+let _supTotal = 0; // guardamos la superficie calculada
+
 // ── UTILIDADES ──────────────────────────────────────────────
 function multiplo50(n) { return Math.ceil(n / 50) * 50; }
 function floorInt(n)   { return Math.floor(n); }
@@ -333,7 +540,6 @@ function calcMontantes(largo, ancho) {
   if (d3 === Math.floor(d3))   paso3 = d3 - 1;
   else if (d3 > 2)             paso3 = Math.floor(d3) - 1;
   else                         paso3 = Math.floor(d3);
-  // Python: paso4 = paso3 * largo  ← corregido (era ancho)
   const paso4 = paso3 * largo;
   return Math.ceil((paso2 + paso4) / 2.6);
 }
@@ -352,20 +558,21 @@ function calcVelas(largo, ancho, bajaCm) {
   return { barras: Math.ceil((p3 * 1.15 * bajaM) / 2.6), isDefault, bajaCm };
 }
 
-function calcPlacas(largo, ancho) {
-  return Math.ceil((largo * ancho) / 2.88);
+function calcPlacas(largo, ancho, divisor) {
+  divisor = divisor || 2.88;
+  return Math.ceil((largo * ancho) / divisor);
 }
 
 function calcTornilloFix(largo, ancho, soleras) {
-  return Math.ceil(largo * ancho + 4 * soleras); // crudo, multiplo50 al final
+  return Math.ceil(largo * ancho + 4 * soleras);
 }
 
 function calcTarugo(largo, ancho, soleras) {
-  return Math.ceil(largo * ancho + 4 * soleras); // crudo, multiplo50 al final
+  return Math.ceil(largo * ancho + 4 * soleras);
 }
 
-function calcT1(montantes) { return montantes * 6; } // crudo, multiplo50 al final
-function calcT2(largo, ancho) { return Math.ceil(largo * ancho * 18); } // crudo
+function calcT1(montantes) { return montantes * 6; }
+function calcT2(largo, ancho) { return Math.ceil(largo * ancho * 18); }
 
 function calcMasilla(sup) {
   const consumo = sup * 0.8;
@@ -399,10 +606,10 @@ function calcularAmbiente(largoRaw, anchoRaw, bajaCm) {
     largo, ancho, sup, montantes, soleras,
     velas: velas.barras, velaDefault: velas.isDefault, bajaCm: velas.bajaCm,
     placas:  calcPlacas(largo, ancho),
-    t8:      calcTornilloFix(largo, ancho, soleras), // crudo
-    tarugo:  calcTarugo(largo, ancho, soleras),       // crudo
-    t1:      calcT1(montantes),                       // crudo
-    t2:      calcT2(largo, ancho),                    // crudo
+    t8:      calcTornilloFix(largo, ancho, soleras),
+    tarugo:  calcTarugo(largo, ancho, soleras),
+    t1:      calcT1(montantes),
+    t2:      calcT2(largo, ancho),
     masilla: calcMasilla(sup),
     cinta:   calcCinta(sup),
   };
@@ -465,7 +672,6 @@ function calcular() {
   }
 
   const resultados = medidas.map(([l, a]) => calcularAmbiente(l, a, bajaCm));
-  const resultadosAmbientes = resultados;
   let datos;
   if (resultados.length === 1) {
     datos = Object.assign({}, resultados[0]);
@@ -476,6 +682,9 @@ function calcular() {
   } else {
     datos = combinarAmbientes(resultados);
   }
+
+  // Guardar superficie total para el selector de placa
+  _supTotal = datos.sup;
 
   // Header
   let headerHtml = `<div class="res-title">Resultado del cálculo</div>`;
@@ -516,7 +725,41 @@ function calcular() {
   }
 
   document.getElementById('resultado').style.display = 'block';
+
+  // Mostrar selector de placa y resetear a default
+  const placaSwap = document.getElementById('placa-swap');
+  placaSwap.style.display = 'block';
+  // Resetear selección al default (095240)
+  document.querySelectorAll('.placa-opt').forEach(el => el.classList.remove('selected'));
+  document.querySelector('.placa-opt[data-cod="095240"]').classList.add('selected');
+  document.getElementById('placa-result').classList.remove('visible');
+
   document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── SELECTOR DE PLACA ────────────────────────────────────────
+function seleccionarPlaca(el) {
+  // Marcar opción
+  document.querySelectorAll('.placa-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const cod  = el.dataset.cod;
+  const nom  = el.dataset.nom;
+  const div  = parseFloat(el.dataset.div);
+  const cant = Math.ceil(_supTotal / div);
+
+  const resEl = document.getElementById('placa-result');
+
+  // Si es el default, no mostrar resultado alternativo
+  if (cod === '095240') {
+    resEl.classList.remove('visible');
+    return;
+  }
+
+  document.getElementById('pr-cod').textContent  = cod;
+  document.getElementById('pr-nom').textContent  = nom;
+  document.getElementById('pr-cant').textContent = cant;
+  resEl.classList.add('visible');
 }
 
 // Enter para calcular
